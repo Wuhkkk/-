@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HALO — 座舱环形交互系统</title>
+<meta name="description" content="HALO：一套用环形光带替代中控大屏的概念智能座舱交互系统。语音优先、响应材质与全息投影协同工作。" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <nav class="nav">
+    <a class="nav-mark" href="#top"><span class="ring"></span>HALO</a>
+    <div class="nav-links">
+      <a v-for="link in navLinks" :key="link.id" :href="'#' + link.id" :class="{ active: activeSection === link.id }">{{ link.label }}</a>
+    </div>
+    <a class="nav-cta" href="#contact">获取提案 PDF</a>
+    <button class="nav-toggle" :aria-expanded="menuOpen" aria-label="打开菜单" @click="toggleMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-overlay" :class="{ open: menuOpen }">
+    <a v-for="link in navLinks" :key="link.id" :href="'#' + link.id" @click="closeMenu">{{ link.label }}</a>
+  </div>
+
+  <main id="top">
+
+    <header class="hero wrap" id="hero">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">概念智能座舱 · 交互系统</p>
+          <h1 class="hero-title">HALO</h1>
+          <p class="hero-sub">一圈光，替代一整块屏幕。语音、光环、材质与投影协同工作，把中控大屏的功能拆分成四种更轻的交互方式。</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#media">看四种交互介质</a>
+            <a class="btn btn-ghost" href="#modes">看关键场景</a>
+          </div>
+        </div>
+        <div class="hero-ring-wrap">
+          <canvas id="heroRing" ref="ringCanvas" aria-hidden="true"></canvas>
+        </div>
+      </div>
+    </header>
+
+    <section class="ticker">
+      <div class="wrap">
+        <div class="ticker-row">
+          <div class="ticker-item"><span class="ticker-num">0</span><span class="ticker-label">常驻中控大屏</span></div>
+          <div class="ticker-item"><span class="ticker-num">4</span><span class="ticker-label">种感知交互介质</span></div>
+          <div class="ticker-item"><span class="ticker-num">18mm</span><span class="ticker-label">光环高度</span></div>
+          <div class="ticker-item"><span class="ticker-num">1</span><span class="ticker-label">处主动点亮：紧急告警</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="manifesto wrap">
+      <p class="manifesto-line" v-reveal>
+        <span class="dim">行业在拼屏幕数量。</span><br/>
+        HALO 拼的是 <span class="pop">注意力效率</span>。
+      </p>
+    </section>
+
+    <section class="section wrap" id="media">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">四种介质，一条原则</h2>
+          <p class="section-lede">非必要不显示。视觉、听觉、触觉与空间投影各司其职，替代传统中控屏承担的所有功能。</p>
+        </div>
+      </div>
+      <div class="media-list">
+        <div class="media-cell" v-for="item in mediaItems" :key="item.title" v-reveal>
+          <span class="idx">{{ item.idx }}</span>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.desc }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="modes">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">五个状态，先睹为快</h2>
+          <p class="section-lede">HALO 的"界面"多数时候是空的。完整八状态生命周期见提案文档。</p>
+        </div>
+      </div>
+      <div class="gallery">
+        <figure class="gcard" v-for="state in galleryStates" :key="state.idx" v-reveal>
+          <div class="gframe" :class="state.scene">
+            <template v-if="state.scene === 'scene-standby'"><div class="arcline"></div></template>
+            <template v-else-if="state.scene === 'scene-voice'">
+              <div class="bars"><span v-for="n in 7" :key="n"></span></div>
+            </template>
+            <template v-else-if="state.scene === 'scene-rest'"><div class="pulse"></div></template>
+            <template v-else-if="state.scene === 'scene-cinema'"><div class="screen"></div></template>
+            <template v-else-if="state.scene === 'scene-alert'"><div class="flash"></div><div class="ring"></div></template>
+          </div>
+          <span class="idx">{{ state.idx }}</span>
+          <h3>{{ state.title }}</h3>
+          <p>{{ state.desc }}</p>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section wrap" id="compare">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">对标：市场都挤在同一象限</h2>
+          <p class="section-lede">横轴为屏幕总面积／集成度，纵轴为驾驶时认知负荷。头部竞品聚集右上，HALO 独占对角空白。</p>
+        </div>
+      </div>
+      <div class="chart-shell" v-reveal>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--ink-faint)"></span>行业竞品</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--cyan)"></span>HALO（本方案）</span>
+        </div>
+        <div class="chart-wrap" ref="chartWrapRef">
+          <div class="chart-scroll">
+            <svg viewBox="0 0 720 420" role="img" aria-label="竞品定位象限图：HALO 处于低屏幕面积、低认知负荷象限，其余竞品集中于高屏幕面积、高认知负荷象限">
+              <rect class="quad-fill" x="320" y="20" width="380" height="200"/>
+              <line x1="60" y1="20" x2="60" y2="360" stroke="var(--line-strong)" stroke-width="1"/>
+              <line x1="60" y1="360" x2="700" y2="360" stroke="var(--line-strong)" stroke-width="1"/>
+              <line x1="320" y1="20" x2="320" y2="360" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 4"/>
+              <line x1="60" y1="190" x2="700" y2="190" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 4"/>
+              <text x="335" y="42" class="axis-label">屏幕军备竞赛区</text>
+              <text x="75" y="345" class="axis-label">HALO 所在区</text>
+              <text x="700" y="395" class="axis-label" text-anchor="end">屏幕总面积 / 集成度 →</text>
+              <text x="0" y="0" class="axis-label" transform="translate(30,30) rotate(-90)">驾驶时认知负荷 →</text>
+
+              <g v-for="c in competitors" :key="c.name"
+                 @mouseenter="showTip(c.tip)" @mousemove="moveTip" @mouseleave="hideTip"
+                 style="cursor:pointer;">
+                <circle :cx="c.x" :cy="c.y" :r="c.r || 6" :fill="c.us ? 'var(--cyan)' : 'var(--ink-faint)'"/>
+                <text :x="c.x + (c.labelDx ?? 11)" :y="c.y + (c.labelDy ?? -2)" class="dot-label" :class="{ us: c.us }">{{ c.name }}</text>
+              </g>
+            </svg>
+          </div>
+          <div class="chart-tip" :class="{ show: tip.show }" :style="{ left: tip.x + 'px', top: tip.y + 'px' }">{{ tip.text }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="spec">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">规格</h2>
+          <p class="section-lede">概念阶段的核心参数，用于说明克制不等于功能缺失。</p>
+        </div>
+      </div>
+      <div class="spec-list">
+        <div class="spec-row" v-for="row in specRows" :key="row.key" v-reveal>
+          <span class="spec-key">{{ row.key }}</span>
+          <span class="spec-val">{{ row.val }}</span>
+          <span class="spec-note">{{ row.note }}</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer wrap" id="contact">
+      <div class="footer-top">
+        <h2 class="footer-title">Zero screens.<br/>Full attention.</h2>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="../概念座舱设计提案/index.html">查看完整提案 →</a>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <div><b>吴浩男</b>交互设计 · 2027 届校招候选人</div>
+        <div><b>作品说明</b>HALO 概念延伸 · 响应式产品展示页</div>
+        <div><b>技术</b>Vue 3（全局构建，无需打包）+ 原生 CSS · 移动 / 平板 / 桌面三套布局</div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="vue.global.prod.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
